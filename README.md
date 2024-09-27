@@ -211,21 +211,30 @@ STS 과제의 데이터 소스(petition, NSMC, slack)와 각 모델에서 사전
 ### 데이터 증강
 
 - train dataset 전체 대상 swap 증강
-  - 베이스라인 모델(Base), 증강 데이터로 학습한 모델(Swap)
-  - 원본 dev set(dev_original), 원본을 스왑한 dev set(dev_swap)
-  - Base의 dev_original에 대한 예측(pred_bo), Base의 dev_swap에 대한 예측(pred_bs),
-  - Swap의 dev_original에 대한 예측(pred_so), Swap의 dev_swap에 대한 예측(pred_ss) 네 가지를 비교 분석
-    1. pred_bo 대비 pred_bs의 분포가
-       1. 비슷하다 ⇒ 스왑 증강한 데이터를 학습하지 않아도 문장 순서에 관계 없이 유사도 점수를 비슷하게 예측한다
-       2. 다르다 ⇒ 스왑 증강한 데이터를 학습하지 않으면 문장 순서에 따라 점수 예측값이 달라질 수 있다
-    2. pred_so 대비 pred_ss의 분포가
-       1. 비슷하다 ⇒ 스왑 증강한 데이터를 학습하면 문장 순서에 관계 없이 유사도 점수를 비슷하게 예측한다
-       2. 다르다 ⇒ 스왑 증강한 데이터를 학습해도 문장 순서에 따라 점수 예측값이 달라질 수 있다
-    3. 기대하는 결과는 1-b & 2-a ⇒ 스왑 증강 데이터를 학습해서 문장 순서에 관계 없이 점수를 예측하는 모델이라면, 어떻게 나올지 모르는 임의의 테스트 데이터 셋에 대해서 안정적으로 점수를 예측해서 성능이 향상될 수 있을 것이다
-       1. 실제 결과와 비교해서 기대 효과가 잘 반영되었는지, 아닌지를 판단
+  - 기대 효과
+    - `문장1, 문장2, 점수` 와 `문장2, 문장1, 점수` 데이터를 모두 학습함으로써 문장 순서에 관계 없이 유사도를 예측할 수 있는 방향으로 학습이 되기를 기대하였습니다.
+- 실험 결과
+    - snunlp/KR-ELECTRA-discriminator
+    
+    ![fig_snunlp_aug=fullswap](https://github.com/user-attachments/assets/6c37356a-b136-4d3d-89e4-e62f2ae20d62)
+    
+    - monologg/koelectra-base-v3-discriminator
+    
+    ![fig_monologg_aug=fullswap](https://github.com/user-attachments/assets/9aad08ce-c753-43b1-a21d-5e8b287bcac9)
+    
+    - kakaobank/kf-deberta-base
+    
+    ![fig_kakaobank_aug=fullswap](https://github.com/user-attachments/assets/fbdbad2d-b153-4c9f-8fef-87615ac21e9b)
+    
+
+- 해석
+    - 세 모델 모두 swap 증강을 적용했을 때 예측 값 분포가 극적으로 개선되지는 않았으나, `val_pearson`은 소폭 상승하였습니다. 각 모델의 3번 그래프에서 예측이 label에 더 가까워진 데이터(파란색)가 멀어진 데이터(주황색)에 비해 약간 더 많은 것을 확인할 수 있습니다. 이는 swap 증강을 적용하여 문장 순서에 관계 없이 유사도를 측정함으로써 성능이 향상된 정도가 swap 증강의 부작용으로 같은 문장이 두 번씩 학습됨으로써 학습 데이터에 과적합 되어 성능이 하락한 정도보다 조금 더 크다고 해석하였습니다.
+    실제로 아래 그래프와 같이 원본 dev dataset과 문장 순서를 바꾼 dataset에 대한 예측 값 차이를 살펴보면, 베이스 모델에서보다 증강 데이터로 학습한 모델에서 분산이 줄어들었음을 확인할 수 있습니다. (dev dataset의 문장 순서를 바꾼 데이터는 두 모델 모두 학습에 사용하지 않음) 즉, 증강 데이터로 학습한 모델은 문장 순서가 바뀌어도 비슷한 점수를 예측할 가능성이 높아졌을 것이라고 판단했습니다.
+        
+        ![pred_diff_dist](https://github.com/user-attachments/assets/9c2dbf7e-042e-40f5-b408-6f8cbec29aa1)
+        
 - train dataset의 label 0.5~3.5인 데이터 대상 swap 증강
-- 기타
-  - 0.5~5 swap + 0~3 중 1000개 뽑아서 5점 데이터 만들기
+
 
 ### 모델링
 
