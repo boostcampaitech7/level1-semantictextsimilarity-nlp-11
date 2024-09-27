@@ -161,15 +161,17 @@ STS 과제의 데이터 소스(petition, NSMC, slack)와 각 모델에서 사전
     - 실제 실험 결과(그래프)
         - snunlp/KR-ELECTRA-discriminator
         
-        ![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/4de287ad-cf4d-4ea6-a3bb-3bc3ba2bdb10/b2d0fad4-f6b5-439b-ad16-d3dab7c609aa/image.png)
+        ![image](https://github.com/user-attachments/assets/903972b8-6d3f-4756-8e6f-d9a91c1b288b)
         
         - monologg/koelectra-base-v3-discriminator
         
-        ![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/4de287ad-cf4d-4ea6-a3bb-3bc3ba2bdb10/36369220-bd83-40c3-a802-83d03b862895/image.png)
+        ![image](https://github.com/user-attachments/assets/72e91c80-fc35-44b8-a716-00d3043c8136)
+
         
         - kakaobank/kf-deberta-base
         
-        ![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/4de287ad-cf4d-4ea6-a3bb-3bc3ba2bdb10/1a83b91b-79a9-4b7a-956e-f1cf2793a8f5/image.png)
+        ![image](https://github.com/user-attachments/assets/dd1502ab-39b9-4af7-b74b-25e4750cc7c8)
+
         
         - 해석
             
