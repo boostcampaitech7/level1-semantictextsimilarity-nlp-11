@@ -78,7 +78,7 @@
        - err_diff > 0이면 pred2가 pred1보다 label에 가까워졌다(클수록 가까워진 정도가 큼) ⇒ 방법론 적용 시 성능 향상의 요인
        - err_diff < 0이면 pred2가 pred1보다 label에서 멀어졌다(작을수록 멀어진 정도가 큼) ⇒ 방법론 적용 시 성능 하락의 요인
 
-### 사전 학습 모델 선택 - 상엽
+### 사전 학습 모델 선택
 
 **snunlp/KR-ELECTRA-discriminator**
 
