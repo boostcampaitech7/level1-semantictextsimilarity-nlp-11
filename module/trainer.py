@@ -27,7 +27,7 @@ class DefaultTrainer(BaseTrainer):
         total_loss = 0
         for (inputs, target) in tqdm(self.train_dataloader, total=len(self.train_dataloader), desc=f"epoch {epoch} training"):
             # 1.1. prepare data
-            inputs = {k: v.to(self.device) for k, v in self.inputs.items()}
+            inputs = {k: v.to(self.device) for k, v in inputs.items()}
             target = target.to(self.device)
             # 1.2. initalize gradient by 0
             self.optimizer.zero_grad()
@@ -62,7 +62,7 @@ class DefaultTrainer(BaseTrainer):
         with torch.no_grad():
             for (inputs, target) in tqdm(self.valid_dataloader, total=len(self.valid_dataloader), desc=f"epoch {epoch} validing"):
                 # 1.1. prepare data
-                inputs = {k: v.to(self.device) for k, v in self.inputs.items()}
+                inputs = {k: v.to(self.device) for k, v in inputs.items()}
                 target = target.to(self.device)                
                 # 1.2. run model
                 output = self.model(inputs)

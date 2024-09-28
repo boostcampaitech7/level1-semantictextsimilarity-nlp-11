@@ -337,7 +337,6 @@ class HanspellDataset(BaseDataset):
             df[f'hanspell_{input_col}'] = hanspell_list
         df.to_csv(self.data_path, index=False)
 
-
 class HanspellPyKoSpacingDataset(BaseDataset):
     def __init__(self, data_path, tokenizer, col_info, max_length):
         """

@@ -51,5 +51,5 @@ class BaseTrainer:
                 name=self.save_file.split("/")[-1],
             )
         '''
-        for epoch in range(self.epochs + 1):
+        for epoch in range(self.epochs):
             self._train_epoch(epoch)

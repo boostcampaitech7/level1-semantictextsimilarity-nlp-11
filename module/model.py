@@ -3,7 +3,7 @@ import torch.nn.functional as F
 import transformers
 
 
-class BaseModel(nn.Module):
+class DefaultModel(nn.Module):
     def __init__(self, plm_name, add_special_token):
         super().__init__()
         self.plm_name = plm_name
