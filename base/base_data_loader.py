@@ -22,7 +22,7 @@ class DataModule:
         self.predict_dataset = None
 
         self.tokenizer = transformers.AutoTokenizer.from_pretrained(plm_name)
-        if len(add_special_token) == 0:
+        if len(add_special_token) != 0:
              special_token = {
                   'additional_special_tokens': add_special_token
              }
