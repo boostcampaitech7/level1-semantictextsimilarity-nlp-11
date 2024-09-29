@@ -406,3 +406,92 @@ class HanspellPyKoSpacingDataset(BaseDataset):
                 hanspell_list.append(spell_checker.check(sentence.replace('&', ' &amp; ')).as_dict()['checked'])
             df[f'py-ko-spacing_hanspell_{input_col}'] = hanspell_list
         df.to_csv(self.data_path, index=False)
+
+
+class KFDataset(torch.utils.data.Dataset):
+    def __init__(self, data, tokenizer, col_info, max_length):
+        super().__init__()
+        self.data = data
+        self.tokenizer = tokenizer
+        self.col_info = col_info
+        self.max_length = max_length
+        self.inputs, self.targets = self.preprocessing(self.data)
+
+    def __getitem__(self, idx):
+        inputs = {k: torch.tensor(v) for k, v in self.inputs[idx].items()}
+        if len(self.targets) == 0:
+            return inputs
+        else:
+            targets = torch.tensor(self.targets[idx])
+            return inputs, targets
+
+    def __len__(self):
+        return len(self.inputs)
+
+    def preprocessing(self, data):
+        try:
+            targets = data[self.col_info['label']].values.tolist()
+        except:
+            targets = []
+        # 텍스트 데이터를 전처리합니다.
+        inputs = self.tokenizing(data)
+
+        return inputs, targets
+
+    def tokenizing(self, dataframe):
+        data = []
+        for idx, item in tqdm(dataframe.iterrows(), desc='tokenizing', total=len(dataframe)):
+            sentences = [item[text_column] for text_column in self.col_info['input']]
+            outputs = self.tokenizer(sentences[0], sentences[1], 
+                                     add_special_tokens=True, padding='max_length',
+                                     max_length=self.max_length, truncation=True)
+
+            data.append({'input_ids': outputs['input_ids'], 
+                         'token_type_ids': outputs['token_type_ids'],
+                         'attention_mask': outputs['attention_mask']})
+        
+        return data
+    
+
+class STSWithBinClsDataset(BaseDataset):
+    """
+    1단계: 3점 미만, 3점 이상으로 이진 분류, 2단계: 점수 예측하는 STSWithMinClsModel을 위해 label과 binary label을 같이 반환하는 데이터셋
+    """
+    def __init__(self, data_path, tokenizer, col_info, max_length):
+        super().__init__(data_path, tokenizer, col_info, max_length)
+
+    def preprocessing(self, data):
+        try:
+            labels = data[self.col_info['label']].values.tolist()
+        except:
+            labels = []
+        # 텍스트 데이터를 전처리합니다.
+        inputs = self.tokenizing(data)
+        bin_labels = list(map(lambda x: 0 if x < 3 else 1, labels))
+        targets = []
+        for i in range(len(labels)):
+            targets.append({'bin': bin_labels[i], 'label': labels[i]})
+
+        return inputs, targets
+
+    def tokenizing(self, dataframe):
+        data = []
+        for idx, item in tqdm(dataframe.iterrows(), desc='tokenizing', total=len(dataframe)):
+            sep_token, sep_token_id = self.tokenizer.sep_token, self.tokenizer.sep_token_id
+            outputs = self.tokenizer(item['source'], item['sentence_1'] + sep_token + item['sentence_2'], 
+                                     add_special_tokens=True, padding='max_length',
+                                     max_length=self.max_length, truncation=True)
+
+            data.append({'input_ids': outputs['input_ids'], 
+                         'token_type_ids': outputs['token_type_ids'],
+                         'attention_mask': outputs['attention_mask']})
+
+        return data
+    
+    def __getitem__(self, idx):
+        inputs = {k: torch.tensor(v) for k, v in self.inputs[idx].items()}
+        if len(self.targets) == 0:
+            return inputs
+        else:
+            targets = {k: torch.tensor(v) for k, v in self.targets[idx].items()}
+            return inputs, targets
