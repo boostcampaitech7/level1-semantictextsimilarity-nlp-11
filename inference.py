@@ -31,7 +31,7 @@ def inference(dataloader, model, criterion, metrics, device):
 
     return result, outputs
 
-def main(checkpoint_path, specific=None):
+def main(checkpoint_path):
     checkpoint = torch.load(checkpoint_path)
     config = checkpoint['config']
     config['data_module']['args']['shuffle'] = False
@@ -39,8 +39,8 @@ def main(checkpoint_path, specific=None):
     # 1. set data_module
     data_module = init_obj(config['data_module']['type'], config['data_module']['args'], module_data)
     train_dataloader = data_module.train_dataloader()
+    dev_dataloader = data_module.dev_dataloader()
     test_dataloader = data_module.test_dataloader()
-    predict_dataloader = data_module.predict_dataloader()
 
     # 2. set model
     model = init_obj(config['arch']['type'], config['arch']['args'], module_arch)
@@ -62,10 +62,23 @@ def main(checkpoint_path, specific=None):
 
     # 5. inference
     train_result, train_outputs = inference(train_dataloader, model, criterion, metrics, device)
-    test_result, test_outputs = inference(test_dataloader, model, criterion, metrics, device)
+    dev_result, dev_outputs = inference(dev_dataloader, model, criterion, metrics, device)
     print(train_result)
-    print(test_result)
+    print(dev_result)
   
+    test_outputs = []
+    with torch.no_grad():
+        for inputs in tqdm(test_dataloader):
+            inputs = {k: v.to(device) for k, v in inputs.items()}
+            output = model(inputs)
+            test_outputs.append(output)
+
+    test_outputs = torch.cat(test_outputs).squeeze()
+
+    train_outputs = train_outputs.tolist()
+    dev_outputs = dev_outputs.tolist()
+    test_outputs = test_outputs.tolist()
+
     # 6. save output
     pwd = os.getcwd()
     if not os.path.exists(f'{pwd}/output/'):
@@ -75,27 +88,21 @@ def main(checkpoint_path, specific=None):
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
 
-    train_df = pd.read_csv(config["data_module"]["args"]["train_path"])
-    dev_df = pd.read_csv(config["data_module"]["args"]["test_path"])
-    train_df['target'] = train_outputs.tolist()
-    dev_df['target'] = test_outputs.tolist()
+    train_df = pd.DataFrame()
+    dev_df = pd.DataFrame()
+    test_df = pd.DataFrame()
+    train_df['id'] = [f"boostcamp-sts-v1-train-{i:03d}" for i in range(len(train_outputs))]
+    dev_df['id'] = [f"boostcamp-sts-v1-dev-{i:03d}" for i in range(len(dev_outputs))]
+    test_df['id'] = [f"boostcamp-sts-v1-test-{i:03d}" for i in range(len(test_outputs))]
+    train_df['target'] = train_outputs
+    dev_df['target'] = dev_outputs
+    test_df['target'] = test_outputs
     train_df.to_csv(f'{folder_path}/train_output.csv', index=False)
     dev_df.to_csv(f'{folder_path}/dev_output.csv', index=False)
-
-    outputs = []
-    with torch.no_grad():
-        for inputs in tqdm(predict_dataloader):
-            inputs = {k: v.to(device) for k, v in inputs.items()}
-            output = model(inputs)
-            outputs.append(output)
-
-    outputs = torch.cat(outputs).squeeze()
-    test_df = pd.read_csv(f'{pwd}/data/sample_submission.csv')
-    test_df['target'] = outputs.tolist()
     test_df.to_csv(f'{folder_path}/test_output.csv', index=False)
 
 if __name__ == '__main__':
 
-    checkpoint_path = '/Users/gj/Downloads/level1-semantictextsimilarity-nlp-11/saved/plm=klue-roberta-small_val-pearson=0.85868.pth'
-    main(checkpoint_path, specific=False)
+    checkpoint_path = '/Users/gj/Downloads/level1-semantictextsimilarity-nlp-11/saved/plm=klue-roberta-small_val-pearson=0.85345.pth'
+    main(checkpoint_path)
     

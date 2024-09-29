@@ -28,16 +28,11 @@ def main(cfg):
     # 0. DictConfig to dict
     config = OmegaConf.to_container(cfg, resolve=True)
 
+    # 0.1. initialize wandb run
     if config['wandb']['enable']:
         wandb.init(project=config["wandb"]["project_name"])
 
-    # sweep wandb config 
-    '''
-    config['arch']['args']['plm_name'] = wandb.config['plm_name']
-    config['data_module']['args']['plm_name'] = wandb.config['plm_name']
-    '''
-
-    # naming wandb run
+    # 0.2. naming wandb run
     config['run_name'] = \
         f"plm={config['arch']['args']['plm_name']}"
     wandb.run.name = config['run_name']
@@ -53,7 +48,6 @@ def main(cfg):
     model = init_obj(config["arch"]["type"], config["arch"]["args"], module_arch)
 
     # 3. set deivce(cpu or gpu)
-    # 장치 설정
     if torch.cuda.is_available():
         device = torch.device("cuda")
     elif torch.backends.mps.is_available():

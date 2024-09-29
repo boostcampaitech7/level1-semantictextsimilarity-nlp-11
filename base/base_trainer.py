@@ -20,6 +20,7 @@ class BaseTrainer:
         self.epochs = config["trainer"]["epochs"]
         self.mode = config["trainer"]["mode"]
         self.best_score = float("inf") if self.mode == "min" else 0
+        self.prev_save_file = None
 
         # model save folder path
         if not os.path.exists(config["trainer"]["save_dir"]):

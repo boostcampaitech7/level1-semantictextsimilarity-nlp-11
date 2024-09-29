@@ -17,8 +17,7 @@ data_module:
     shuffle: true
     train_path: ${pwd}/data/train.csv
     dev_path: ${pwd}/data/dev.csv
-    test_path: ${pwd}/data/dev.csv
-    predict_path: ${pwd}/data/test.csv
+    test_path: ${pwd}/data/test.csv
     max_length: 100
     col_info:
       label: label

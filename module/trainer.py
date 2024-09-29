@@ -18,7 +18,7 @@ class DefaultTrainer(BaseTrainer):
         self.data_module = data_module
         self.lr_scheduler = lr_scheduler
         self.train_dataloader = self.data_module.train_dataloader()
-        self.valid_dataloader = self.data_module.val_dataloader()
+        self.dev_dataloader = self.data_module.dev_dataloader()
 
     def _train_epoch(self, epoch):
  
@@ -60,7 +60,7 @@ class DefaultTrainer(BaseTrainer):
         total_loss = 0
         outputs, targets = [], []
         with torch.no_grad():
-            for (inputs, target) in tqdm(self.valid_dataloader, total=len(self.valid_dataloader), desc=f"epoch {epoch} validing"):
+            for (inputs, target) in tqdm(self.dev_dataloader, total=len(self.dev_dataloader), desc=f"epoch {epoch} validing"):
                 # 1.1. prepare data
                 inputs = {k: v.to(self.device) for k, v in inputs.items()}
                 target = target.to(self.device)                
@@ -77,7 +77,7 @@ class DefaultTrainer(BaseTrainer):
         outputs = torch.cat(outputs)
         targets = torch.cat(targets)
         result = {}
-        result["val_loss"] = total_loss/len(self.valid_dataloader)
+        result["val_loss"] = total_loss/len(self.dev_dataloader)
         for metric in self.metric_ftns:
             result[f"val_{metric.__name__}"] = metric(outputs, targets)
         self.lr_scheduler.step(result[f"val_{self.config['metrics'][0]}"])
@@ -107,3 +107,7 @@ class DefaultTrainer(BaseTrainer):
             'config': self.config,
             f'val_{self.config["metrics"][0]}': self.best_score,
         }, f"{self.save_file}_val-{self.config['metrics'][0]}={self.best_score:.5f}.pth")
+
+        if self.prev_save_file is not None:
+            os.remove(self.prev_save_file)
+        self.prev_save_file = f"{self.save_file}_val-{self.config['metrics'][0]}={self.best_score}.pth"
