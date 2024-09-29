@@ -41,12 +41,27 @@
 
    모델A가 모델B보다 피어슨 상관 계수가 높다는 것은, 모델B보다 <ins>모델A의 예측값들의 전체적인 경향(증감율)이 실제 값들의 경향(증감율)과 더 비슷하다</ins>는 것을 의미합니다. 단, 이것이 모델A가 모델B보다 실제 값에 가깝게 예측하는 것을 보장하지는 않으므로 해석에 주의가 필요합니다. (실제 값에 가깝게 예측하는지도 평가하고자 한다면 MSE 등 다른 평가 지표를 함께 사용하는 것이 좋습니다.)
 
-## 프로젝트 진행
-<img width="900" alt="스크린샷 2024-09-27 13 15 37" src="https://github.com/user-attachments/assets/68c8d05c-281b-47f0-bcc8-5a180ff47440" />
+<br/>
 
+## 팀원 소개
+| <img alt="강정완" width="140" height="140" src="https://github.com/user-attachments/assets/f46c690d-d838-496c-8f0d-c52285e782b2" /> | <img alt="김민선" width="140" height="140" src="https://github.com/user-attachments/assets/404b7b75-b308-4a50-bbb9-d827f7936d96" /> |<img alt="서선아" width="140" height="140" src="https://github.com/user-attachments/assets/c3e11cb6-dd7d-4803-a8cd-b20231ccb3c7" /> | <img alt="이인구" width="140" height="140" src="https://github.com/user-attachments/assets/acc572e1-a38d-432a-b95d-bf66b588f5bb" /> | <img alt="이재협" width="140" height="140" src="https://github.com/user-attachments/assets/3c5b062e-fa31-4ba0-94b5-47968ec26c28" /> | <img alt="임상엽" width="140" height="140" src="https://github.com/user-attachments/assets/a569834b-fdd4-4065-b341-4c405ee87230" />
+|:---:|:---:|:---:|:---:|:---:|:---:|
+| **강정완** | **김민선** | **서선아** | **이인구** | **이재협** | **임상엽** |
+| 전과정 참여, 프로젝트 템플릿 제작 | 전과정 참여 | 전과정 참여 | 전과정 참여 | 전과정 참여 | 전과정 참여 |
+| [GJ98](https://github.com/GJ98) | [CLM-BONNY](https://github.com/CLM-BONNY) | [seon03](https://github.com/seon03) | [inguelee](https://github.com/inguelee) | [jhyeop](https://github.com/jhyeop) | [gityeop](https://github.com/gityeop) | 
+
+<br/>
+
+## 프로젝트 진행
+- AI 프로젝트 전체 구조와 흐름에 대한 적응과 학습을 위해 팀원 전원이 End-to-end로 프로젝트 전 과정에 참여했습니다.
+<img width="1000" alt="스크린샷 2024-09-30 07 32 00" src="https://github.com/user-attachments/assets/f7d04dea-e572-40ef-9c46-71079dd45e91">
+
+<br/>
 
 ## 프로젝트 템플릿
 프로젝트를 진행할 때 여러 가지 모델, 전처리 방식, 하이퍼 파라미터 등을 조합하여 다양하게 실험해보는 것이 중요하다고 생각했습니다. [해당 탬플릿](https://github.com/GJ98/pytorch-template)은 모델, 데이터셋, 손실함수 등 학습 구성 요소를 별도 파일로 두어 코드 관리를 용이하게 해주고, 설정 파일 수정만으로 구현 클래스와 하이퍼파라미터를 쉽게 변경할 수 있도록 하여 다양한 실험을 효율적으로 수행할 수 있게 해줍니다.
+
+<br/>
 
 ## 데이터 분석
 ### 1. 데이터 라벨링 기준
@@ -79,7 +94,7 @@
 
 ### 2. EDA: train / dev 데이터 셋의 label별 / 소스별 분포
 
-
+<br/>
 
 ## 사전 학습 모델 선택
 
@@ -142,6 +157,8 @@ STS 과제의 데이터 소스(petition, NSMC, slack)와 각 모델에서 사전
 - **monologg/koelectra-base-v3-discriminator**는 확장된 데이터로 비공식적 문장 처리에 유리하며, 유사한 높은 성능을 유지합니다.
 - **kakaobank/kf-deberta-base**는 범용성과 금융 도메인 특화 능력을 겸비하여, KorSTS 평가에서 가장 높은 상관 계수를 기록함으로써 다양한 주제의 문장 쌍을 효과적으로 평가할 수 있습니다.
 - **team-lucid/deberta-v3-xlarge-korean**은 가장 큰 모델 사이즈를 통해 복잡한 문장의 패턴과 미묘한 의미 차이를 효과적으로 포착할 수 있어, 문장 유사도 평가에서 높은 정확도와 정밀도를 기대할 수 있습니다.
+
+<br/>
 
 ## 학습 설계 및 실험 결과 분석
 
@@ -296,6 +313,8 @@ STS 과제의 데이터 소스(petition, NSMC, slack)와 각 모델에서 사전
   - segment embedding
   - 소스별 특화 모델 학습 후 결과 병합 (rtt, sampled / nsmc, petition, slack)
   - 이진 분류(0~3→0 / 3~5→1) 후 점수 예측 모델
+
+<br/>
 
 ## 최종 제출 결과
 
