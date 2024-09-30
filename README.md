@@ -47,7 +47,7 @@
 | <img alt="강정완" width="140" height="140" src="https://github.com/user-attachments/assets/f46c690d-d838-496c-8f0d-c52285e782b2" /> | <img alt="김민선" width="140" height="140" src="https://github.com/user-attachments/assets/404b7b75-b308-4a50-bbb9-d827f7936d96" /> |<img alt="서선아" width="140" height="140" src="https://github.com/user-attachments/assets/c3e11cb6-dd7d-4803-a8cd-b20231ccb3c7" /> | <img alt="이인구" width="140" height="140" src="https://github.com/user-attachments/assets/acc572e1-a38d-432a-b95d-bf66b588f5bb" /> | <img alt="이재협" width="140" height="140" src="https://github.com/user-attachments/assets/3c5b062e-fa31-4ba0-94b5-47968ec26c28" /> | <img alt="임상엽" width="140" height="140" src="https://github.com/user-attachments/assets/a569834b-fdd4-4065-b341-4c405ee87230" />
 |:---:|:---:|:---:|:---:|:---:|:---:|
 | **강정완** | **김민선** | **서선아** | **이인구** | **이재협** | **임상엽** |
-| 전과정 참여, 프로젝트 템플릿 제작 | 전과정 참여 | 전과정 참여 | 전과정 참여 | 전과정 참여 | 전과정 참여 |
+| 전과정 참여 <br> 프로젝트 템플릿 제작 | 전과정 참여 | 전과정 참여 | 전과정 참여 | 전과정 참여 | 전과정 참여 |
 | [GJ98](https://github.com/GJ98) | [CLM-BONNY](https://github.com/CLM-BONNY) | [seon03](https://github.com/seon03) | [inguelee](https://github.com/inguelee) | [jhyeop](https://github.com/jhyeop) | [gityeop](https://github.com/gityeop) | 
 
 <br/>
