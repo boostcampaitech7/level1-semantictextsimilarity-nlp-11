@@ -93,6 +93,38 @@
 결론: 0점과 5점은 학습이 수월해 보인다. 반면에, 2점과 3점 학습이 어려워 보인다. 연관성이 있는 단어(재밌다/좋다)와 의미가 동일한 단어(봬다/만나다)의 차이를 명확히 알아야 구분할 수 있기 때문이다.
 
 ### 2. EDA: train / dev 데이터 셋의 label별 / 소스별 분포
+**Train Label Distribution (훈련 데이터 레이블 분포)**
+  
+   ![train](https://github.com/user-attachments/assets/10653a9c-b001-4658-ae66-ea6e5d40f276)
+  
+- 설명: 이 그래프는 훈련 데이터셋에 포함된 각 레이블(label)의 분포를 보여줍니다. x축은 레이블의 값(0에서 5까지), y축은 해당 레이블에 속하는 데이터의 개수입니다.
+- 관찰 사항: 특정 레이블(0, 2, 3, 5)의 데이터는 매우 많지만, 일부 레이블(1, 4)은 상대적으로 적습니다. 훈련 데이터셋에서 각 레이블이 균형 있게 분포하지 않음을 나타냅니다.
+
+**Dev Label Distribution (검증 데이터 레이블 분포)**
+  
+   ![dev](https://github.com/user-attachments/assets/5e2475eb-4bbf-451d-9e80-1b69f4306817)
+  
+- 설명: 이 그래프는 검증(Dev) 데이터셋에서 레이블 분포를 시각화한 것입니다.
+- 관찰 사항: 모든 레이블이 비교적 균등하게 분포되어 있습니다. 각 레이블의 개수 차이가 훈련 데이터보다 적고, 레이블의 편차가 덜함을 알 수 있습니다.
+
+**Train Source Distribution (훈련 데이터 출처 분포)**
+  
+   ![train_source](https://github.com/user-attachments/assets/f1c5c730-6eae-406d-a5d9-bfc2e14627ee)
+  
+- 설명: 훈련 데이터가 여러 소스(source)에서 수집된 것을 보여주는 그래프입니다. x축은 데이터의 출처(예: NSMC, Slack, Petition 등), y축은 각 출처에서 제공한 데이터 개수입니다.
+- 관찰 사항: `nsmc-sampled`, `slack-sampled`과 같은 소스가 대부분의 데이터를 제공하고 있습니다. 반면 `slack-rtt`나 `petition-rtt`와 같은 소스는 상대적으로 적은 데이터를 제공하고 있습니다.
+
+**Dev Source Distribution (검증 데이터 출처 분포)**
+  
+   ![dev_source](https://github.com/user-attachments/assets/4bf5e467-240f-4b32-944b-e1952366483b)
+  
+- 설명: 이 그래프는 검증 데이터의 출처 분포를 나타냅니다. 각 출처로부터 얼마나 많은 데이터가 제공되었는지 시각화하고 있습니다.
+- 관찰 사항: 검증 데이터도 `nsmc-sampled`과 `petition-sampled`에서 많이 수집되었지만, 훈련 데이터에 비해 출처 간 데이터 분포의 편차가 상대적으로 적습니다.
+
+**종합 설명**
+
+- **훈련 데이터셋**에서는 일부 레이블과 소스가 편중되어 있는 경향이 강합니다. 특히 레이블 0, 2, 3이 많이 존재하고, `nsmc-sampled`과 같은 소스에서 대부분의 데이터를 가져온 것이 눈에 띕니다.
+- **검증 데이터셋**은 레이블 분포가 더 균등하고, 데이터 소스도 더 다양하게 분포되어 있어 상대적으로 편향이 덜한 데이터셋입니다.
 
 <br/>
 
@@ -211,9 +243,31 @@ STS 과제의 데이터 소스(petition, NSMC, slack)와 각 모델에서 사전
             그래프를 통해 맞춤법 교정이 일부 영역에서는 성능 향상을 가져오지만, **모든 경우에 긍정적인 결과를 주는 것은 아님**을 알 수 있습니다. 특히 **이모티콘(ㅇㅇ), 고유명사, 신조어, 비표준어, 구어체** 등에서 원본 문장의 의미를 왜곡하는 한계를 보였습니다. 이것은 인터넷에서 수집된 데이터의 특성을 처리하기에 맞춤법 교정이 한계가 있다는 의미입니다. 따라서 데이터의 특성을 고려하지 않은 일률적인 맞춤법 교정은 오히려 모델의 성능을 저해할 수 있습니다. 만약 맞춤법 교정을 사용해야 한다면 맞춤법 교정을 통해 전처리된 데이터를 한번 더 전처리하여 데이터의 특성을 더 잘 표현할 수 있도록 해야합니다.
           
 2. **띄어 쓰기 교정**
+   - 기대 효과
+     
+     띄어쓰기가 안 된 데이터로 인해 unknown 토큰이 발생하게 됩니다. 띄어쓰기가 잘못되면 문장을 분석하기 어려워지고, 모델은 해당 단어를 제대로 인식하지 못해 unknown으로 처리할 가능성이 높아집니다. pykospacing과 같은 띄어쓰기 교정을 하면 토큰화가 잘 이루어지고, 이를 통해 unknown 토큰이 발생하는 빈도를 줄여 이러한 문제를 완화할 수 있습니다.
+     
+   - 실험 결과
+      - snunlp/KR-ELECTRA-discriminator
+        
+        ![Image20240925233250_snu](https://github.com/user-attachments/assets/9c21c120-88e6-496c-9b34-c07b68cc59a7)
+
+      - monologg/koelectra-base-v3-discriminator
+  
+        ![Image20240925233334_monolog](https://github.com/user-attachments/assets/9d6ff61d-0f20-4cd9-a698-4cf58379c020)
+
+      - kakaobank/kf-deberta-base
+
+        ![Image20240925233347_kakao](https://github.com/user-attachments/assets/e7254161-cc81-4d57-8dd3-6496940aabd4)
+
+   - 해석
+     
+      - 베이스라인 모델(첫 번째 그래프)과 방법론(pykospacing Spacing) 모델(두 번째 그래프)을 비교해 봤을 때 약간의 차이가 있지만, 분포는 큰 차이가 없다는 것을 볼 수 있으며, 대각선(1:1) 부분에 분포하고 있는 것을 확인할 수 있습니다.
+      - 베이스 라인 모델과 방법론 모델의 오차 값(세번째 그래프) 을 계산한 그래프인데 레이블 0에서 Spacing이 Base보다 나은 경우가 43번이고, Base가 나은 경우가 45번으로 비슷합니다. 레이블 1에서 Spacing이 49번 나은 반면, Base는 61번 나은 경우가 있습니다. 즉, Base가 더 나은 결과를 많이 보였습니다. 레이블 2부터 5까지는 Spacing이 더 우수한 경향이 있음을 볼 수 있습니다. 특히 레이블 5에서는 Spacing이 73번, Base가 59번 더 나은 결과를 보였습니다.
+      - 결론 : 레이블 1에서는 Base가 우수한 결과를 더 자주 보인 반면, 레이블 2부터 5까지는 Spacing이 전반적으로 더 우수한 성능을 보였습니다. Spacing과 Base 간의 성능 차이가 레이블에 따라 다르게 나타나며, 이를 기반으로 특정 상황에서 어느 방법이 더 적합한지 판단할 수 있습니다.
 
    
-3. **영어 → 한글 변환**: `hangulize`를 이용해 영단어를 한글 발음으로 변환하는 작업을 수행하였습니다.
+4. **영어 → 한글 변환**: `hangulize`를 이용해 영단어를 한글 발음으로 변환하는 작업을 수행하였습니다.
     - 예시
     
        | **원본** | **hangulize 적용** |
@@ -224,11 +278,16 @@ STS 과제의 데이터 소스(petition, NSMC, slack)와 각 모델에서 사전
     
       이 작업으로 기대한 바는 실제로 의미가 유사한 문장들의 유사도가 영단어와 한글 단어로 인해 생기는 차이를 줄여 문장들의 유사도를 좀 더 올바르게 판별해 모델 정확도가 높아지는 것입니다.
 
-    - 실제 실험 결과
+    - 실험 결과
+      - snunlp/KR-ELECTRA-discriminator
 
         ![image](https://github.com/user-attachments/assets/7e98125d-8f9f-4a6a-b48a-cbd7f7d5ed3e)
+        
+      - monologg/koelectra-base-v3-discriminator
    
         ![image](https://github.com/user-attachments/assets/4c344600-c7c5-42fb-8e03-dc10cf3663ec)
+
+      - kakaobank/kf-deberta-base
    
         ![image](https://github.com/user-attachments/assets/b1822634-4787-408a-b19b-2796b3ba4982)
 
