@@ -303,16 +303,26 @@ STS 과제의 데이터 소스(petition, NSMC, slack)와 각 모델에서 사전
       - 결론, 0.5\~3.5 구간의 데이터 swap 증강을 적용하면 학습 데이터의 특정 부분에서 과적합이 발생할 수 있지만, 기존에 학습이 어려웠던 부분인 2\~3점 구간에서의 성능 향상을 더 크게 기대할 수 있습니다.
 
 
-
-
-
 ### 모델링
+1. 스페셜 토큰 추가
+   - 기대 효과
+      - 데이터를 살펴보는 과정에서 소스별 데이터의 특성이 각각 다르다는 것을 확인했습니다. 이를 이용하여 각 소스별 스페셜 토큰을 추가하고 데이터의 특성을 모델이 인식하게 만들면 더 정확한 예측이 가능할 것이라고 기대했습니다.
+   - 실험 결과
+      - snunlp/KR-ELECTRA-discriminator
+           ![snunlp](https://github.com/user-attachments/assets/d77b1d5a-0c4d-496e-8767-96bd7b9fcc4a)
 
-- 스페셜 토큰 추가
-- 기타
-  - segment embedding
-  - 소스별 특화 모델 학습 후 결과 병합 (rtt, sampled / nsmc, petition, slack)
-  - 이진 분류(0~3→0 / 3~5→1) 후 점수 예측 모델
+     - monologg/koelectra-base-v3-discriminator
+           ![monologg](https://github.com/user-attachments/assets/5eb27192-eab3-42e0-a28d-76ee08e44a82)
+
+      - kakaobank/kf-deberta-base
+           ![kakao](https://github.com/user-attachments/assets/0dce888b-83eb-4796-8f7d-a9b488e19b01)
+
+   - 해석
+      - 세 모델 모두 스페셜 토큰을 추가했을 때 예측 값 분포가 극적으로 개선되지는 않았으나, val_pearson은 소폭 상승하였습니다. 위의 실험 결과에서 각 모델의 3번쨰 그래프를 살펴보면 4점, 5점 구간 안에 예측이 label에서 멀어진 데이터(주황색)가 가까워진 데이터(파란색)에 비해 약간 더 많은 것을 확인할 수 있습니다. 성능 평가 지표가 pearson 상관계수이기 때문에 예측값에서 멀어진 데이터들이 증감율을 비슷하게 맞춰 val_pearson이 상승했다고 해석했습니다. 
+2. 기타
+   - segment embedding: 모델링 적용 방식에 따라 각 문장 토큰에 0, 1(스페셜 토큰 추가의 경우 2까지)를 할당해서 문장을 구분할 수 있도록 했습니다.
+   - 소스별 특화 모델 학습 (rtt, sampled / nsmc, petition, slack): 소스별로 데이터를 분리하여 해당 소스에 특화된 모델을 학습한 후, 결과를 병합했습니다.
+   - 이진 분류(0\~3→0 / 3\~5→1) 후 점수 예측 모델: 0\~3 구간의 데이터는 0, 3\~5 구간의 데이터는 1로 분류하는 이진 분류 모델을 통과한 다음, 각 집합의 데이터를 별도의 모델로 학습하는 방식을 구현했습니다.
 
 <br/>
 
