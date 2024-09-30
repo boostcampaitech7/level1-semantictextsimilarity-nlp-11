@@ -1,0 +1,52 @@
+pwd: /data/ephemeral/home/pytorch-template
+
+name: STS
+
+arch:
+  type: DefaultModel
+  args:
+    plm_name: klue/roberta-small
+    add_special_token: ${data_module.args.add_special_token}
+
+data_module:
+  type: DataModule
+  args:
+    plm_name: ${arch.args.plm_name}
+    dataset_name: DefaultDataset
+    batch_size: 16
+    shuffle: true
+    train_path: ${pwd}/data/train.csv
+    dev_path: ${pwd}/data/dev.csv
+    test_path: ${pwd}/data/test.csv
+    max_length: 100
+    col_info:
+      label: label
+      input: [sentence_1, sentence_2]
+    add_special_token: []
+
+optimizer:
+  type: Adam
+  args:
+    lr: 2e-5
+    weight_decay: 0
+    amsgrad: true
+
+loss: l2_loss
+metrics: [pearson]
+mode: max
+
+lr_scheduler:
+  type: ReduceLROnPlateau
+  args:
+    mode: ${mode} 
+    factor: 0.1
+    verbose: true
+
+trainer:
+  epochs: 1
+  save_dir: ${pwd}/saved/
+  mode: ${mode}
+
+wandb:
+  enable: true
+  project_name: jeongwan
